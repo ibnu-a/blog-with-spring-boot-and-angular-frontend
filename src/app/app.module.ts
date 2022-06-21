@@ -7,10 +7,16 @@ import { HeaderComponent } from './header/header.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { LoginComponent } from './auth/login/login.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import {HttpClientModule} from '@angular/common/http';
+import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { RegisterSuccessComponent } from './auth/register-success/register-success.component';
 import { Ng2Webstorage } from 'ngx-webstorage';
+import { HomeComponent } from './home/home.component';
+import { AddPostComponent } from './add-post/add-post.component';
+import { EditorModule } from '@tinymce/tinymce-angular';
+import { HttpClientInterceptor } from './http-client-interceptor';
+import { PostComponent } from './post/post.component';
+import { AuthGuard } from './auth.guard';
 
 @NgModule({
   declarations: [
@@ -18,7 +24,10 @@ import { Ng2Webstorage } from 'ngx-webstorage';
     HeaderComponent,
     RegisterComponent,
     LoginComponent,
-    RegisterSuccessComponent
+    RegisterSuccessComponent,
+    HomeComponent,
+    AddPostComponent,
+    PostComponent
   ],
   imports: [
     BrowserModule,
@@ -27,13 +36,18 @@ import { Ng2Webstorage } from 'ngx-webstorage';
     ReactiveFormsModule,
     Ng2Webstorage.forRoot(),
     RouterModule.forRoot([
+      {path: '', component: HomeComponent},
       {path: 'register', component: RegisterComponent},
+      {path: 'post/:id', component: PostComponent},
       {path: 'login', component: LoginComponent},
-      {path: 'register-success', component: RegisterSuccessComponent}
+      {path: 'register-success', component: RegisterSuccessComponent},
+      {path: 'home', component: HomeComponent},
+      {path: 'add-post', component: AddPostComponent, canActivate: [AuthGuard]}
     ]),
-    HttpClientModule
+    HttpClientModule,
+    EditorModule
   ],
-  providers: [],
+  providers: [{provide: HTTP_INTERCEPTORS, useClass: HttpClientInterceptor, multi: true}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
